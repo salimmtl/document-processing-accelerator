@@ -7,6 +7,8 @@ processing pipeline.
 Built as a demonstration accelerator: the architecture is deliberately small, portable and easy to
 read rather than a production accounting system.
 
+![The code app dashboard](docs/images/code-app-dashboard.png)
+
 ---
 
 ## What it does
@@ -39,6 +41,21 @@ a readable error.
 | **Cloud flows** | *Process Invoice Document* and *Process Receipt Document* — trigger filtering, idempotency guard, try/catch scopes, and a switch across the two extraction methods |
 | **Code app** | *Document Processing Experience* — a tailored React + TypeScript UI over the same tables |
 
+### The processing flow
+
+Each flow claims the record, reads the document, then branches on the record's **Extraction Method** —
+never on the file type. Both branches converge on one completion path, so the field mapping is written
+once.
+
+![The invoice processing flow, showing both extraction branches](docs/images/processing-flow.png)
+
+### The model-driven app
+
+*Document Processing Hub* is the administration and testing surface: capture a record, attach a
+document, pick the extraction method, and inspect everything the flow wrote back.
+
+![An extracted receipt in the model-driven app](docs/images/model-driven-app.png)
+
 ### The code app
 
 A full-height app shell rather than a long scrolling page: a left panel for navigation and filters,
@@ -57,7 +74,7 @@ code-app/           React + TypeScript + Vite source for the code app
 solution/           Unpacked Dataverse solution source
 packages/           Managed and unmanaged solution zips
 flows/              The two cloud flow definitions
-docs/               App spec and the custom prompt text
+docs/               App spec, custom prompt text and screenshots
 sample-documents/   Synthetic invoice and receipt for testing
 ```
 
@@ -118,7 +135,8 @@ A few identifiers are environment-specific and need re-pointing:
   API; the equivalent validation runs as a form script instead.
 - **Line items** are stored as JSON rather than in a normalized child table, deliberately, for the
   first version.
-- The sample documents are **synthetic** — generated for testing, containing no real data.
+- The sample documents are **synthetic** — generated for testing, containing no real data. Where a
+  screenshot showed values extracted from real documents, those rows are redacted.
 
 Out of scope by design: approvals, ERP integration, vendor matching, duplicate detection,
 purchase-order matching, payments, and email ingestion. The data model leaves room for them later.
