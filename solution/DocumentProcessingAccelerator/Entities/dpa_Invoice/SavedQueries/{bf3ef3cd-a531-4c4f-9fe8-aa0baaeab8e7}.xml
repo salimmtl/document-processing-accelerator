@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{bf3ef3cd-a531-4c4f-9fe8-aa0baaeab8e7}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="dpa_invoicename" select="1" icon="1" preview="1">
+        <row name="result" id="dpa_invoiceid">
+          <cell name="dpa_invoicename" width="300" />
+          <cell name="dpa_invoicenumber" width="150" />
+          <cell name="dpa_purchaseordernumber" width="150" />
+          <cell name="dpa_vendorname" width="150" />
+          <cell name="dpa_vendortaxnumber" width="150" />
+          <cell name="dpa_billtoname" width="150" />
+          <cell name="dpa_invoicedate" width="150" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="dpa_invoice">
+          <attribute name="dpa_invoiceid" />
+          <attribute name="dpa_invoicename" />
+          <attribute name="dpa_invoicenumber" />
+          <attribute name="dpa_purchaseordernumber" />
+          <attribute name="dpa_vendorname" />
+          <attribute name="dpa_vendortaxnumber" />
+          <attribute name="dpa_billtoname" />
+          <attribute name="dpa_invoicedate" />
+          <order attribute="dpa_invoicename" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Invoices" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

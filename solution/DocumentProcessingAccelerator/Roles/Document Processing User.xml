@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Role id="{fc9b4b61-dfb3-f111-aaac-7c1e5240ac7b}" name="Document Processing User" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsCustomizable>1</IsCustomizable>
+  <IsAutoAssigned>0</IsAutoAssigned>
+  <Description>Authored by @maker-studio/cds-maker-sdk (persona/security role).</Description>
+  <RolePrivileges>
+    <RolePrivilege name="prvCreatedpa_Invoice" level="Basic" />
+    <RolePrivilege name="prvCreatedpa_Receipt" level="Basic" />
+    <RolePrivilege name="prvCreateSharePointData" level="Global" />
+    <RolePrivilege name="prvReadAppModule" level="Global" />
+    <RolePrivilege name="prvReaddpa_Invoice" level="Basic" />
+    <RolePrivilege name="prvReaddpa_Receipt" level="Basic" />
+    <RolePrivilege name="prvReadSharePointData" level="Global" />
+    <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvWritedpa_Invoice" level="Basic" />
+    <RolePrivilege name="prvWritedpa_Receipt" level="Basic" />
+    <RolePrivilege name="prvWriteSharePointData" level="Global" />
+  </RolePrivileges>
+</Role>

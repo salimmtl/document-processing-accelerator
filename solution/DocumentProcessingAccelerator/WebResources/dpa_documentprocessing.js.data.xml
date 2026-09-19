@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{92b5073f-dfb3-f111-aaab-7c1e52064fd6}</WebResourceId>
+  <Name>dpa_documentprocessing.js</Name>
+  <DisplayName>Document Processing Form Validation</DisplayName>
+  <Description>Client-side guard for the processing lifecycle: blocks a save that moves a record to Ready to Process without an attached source document, and locks processing-owned fields while a run is in flight. Choice values are resolved by label, never hardcoded.</Description>
+  <WebResourceType>3</WebResourceType>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <IsCustomizable>1</IsCustomizable>
+  <CanBeDeleted>1</CanBeDeleted>
+  <IsHidden>0</IsHidden>
+  <FileName>/WebResources/dpa_documentprocessingjs92B5073F-DFB3-F111-AAAB-7C1E52064FD6</FileName>
+</WebResource>

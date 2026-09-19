@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="dpa_extractionmethod" localizedName="Extraction Method" description="Which AI extraction approach the processing flow uses for a record. Selected explicitly by the user; never inferred from the document type or file extension." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <displaynames>
+    <displayname description="Extraction Method" languagecode="1033" />
+  </displaynames>
+  <Descriptions>
+    <Description description="Which AI extraction approach the processing flow uses for a record. Selected explicitly by the user; never inferred from the document type or file extension." languagecode="1033" />
+  </Descriptions>
+  <options>
+    <option value="100000000" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Native AI Builder Model" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000001" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="AI Builder Custom Prompt" languagecode="1033" />
+      </labels>
+    </option>
+  </options>
+</optionset>

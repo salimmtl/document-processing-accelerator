@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<WebResource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <WebResourceId>{7e5660ea-deb3-f111-aaab-7c1e52408682}</WebResourceId>
+  <Name>dpa_receipticon.svg</Name>
+  <DisplayName>Receipt Icon</DisplayName>
+  <Description>Table icon for Receipt: an outlined till-roll slip with a torn zigzag bottom edge and text lines.</Description>
+  <WebResourceType>11</WebResourceType>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <IsEnabledForMobileClient>0</IsEnabledForMobileClient>
+  <IsAvailableForMobileOffline>0</IsAvailableForMobileOffline>
+  <IsCustomizable>1</IsCustomizable>
+  <CanBeDeleted>1</CanBeDeleted>
+  <IsHidden>0</IsHidden>
+  <FileName>/WebResources/dpa_receipticonsvg7E5660EA-DEB3-F111-AAAB-7C1E52408682</FileName>
+</WebResource>

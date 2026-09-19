@@ -1,0 +1,480 @@
+{
+  "solution": {
+    "uniqueName": "DocumentProcessingAccelerator",
+    "displayName": "Document Processing Accelerator",
+    "publisherPrefix": "dpa",
+    "description": "Reusable document-processing accelerator: stores invoices and receipts in Dataverse, drives them through a status lifecycle, and extracts their contents with AI Builder."
+  },
+  "app": {
+    "name": "Document Processing Hub",
+    "description": "Administration and testing surface for the Document Processing Accelerator. Use this app to capture invoice and receipt records, upload a source PDF or image, choose the AI extraction method, submit documents for processing, monitor the processing lifecycle, and read extraction results and processing errors. It deliberately excludes approvals, payments, vendor master matching and accounting posting. Prefer the Document Processing Experience code app when the request is about a tailored end-user browsing experience over the same data.",
+    "newLook": true
+  },
+  "globalChoices": [
+    {
+      "name": "dpa_documentprocessingstatus",
+      "displayName": "Document Processing Status",
+      "description": "Shared processing lifecycle for every document type in the accelerator. Automation owns the transitions into Processing, Completed and Failed; users own Draft and Ready to Process.",
+      "options": ["Draft", "Ready to Process", "Processing", "Completed", "Failed"]
+    },
+    {
+      "name": "dpa_extractionmethod",
+      "displayName": "Extraction Method",
+      "description": "Which AI extraction approach the processing flow uses for a record. Selected explicitly by the user; never inferred from the document type or file extension.",
+      "options": ["Native AI Builder Model", "AI Builder Custom Prompt"]
+    }
+  ],
+  "webResources": [
+    {
+      "name": "dpa_invoiceicon.svg",
+      "displayName": "Invoice Icon",
+      "type": "svg",
+      "description": "Table icon for Invoice: an outlined document sheet with text lines and a currency mark.",
+      "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 2.75h7.5L18.25 7.5v13.75H6z\"/><path d=\"M13.25 2.75V7.5h5\"/><path d=\"M9 12h6\"/><path d=\"M9 15h6\"/><path d=\"M12 10.5v6.75\"/></svg>"
+    },
+    {
+      "name": "dpa_receipticon.svg",
+      "displayName": "Receipt Icon",
+      "type": "svg",
+      "description": "Table icon for Receipt: an outlined till-roll slip with a torn zigzag bottom edge and text lines.",
+      "content": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 2.75h12v16.5l-2 1.5-2-1.5-2 1.5-2-1.5-2 1.5z\"/><path d=\"M9 7.5h6\"/><path d=\"M9 11h6\"/><path d=\"M9 14.5h3.5\"/></svg>"
+    },
+    {
+      "name": "dpa_documentprocessing.js",
+      "displayName": "Document Processing Form Validation",
+      "type": "js",
+      "description": "Client-side guard for the processing lifecycle: blocks a save that moves a record to Ready to Process without an attached source document, and locks processing-owned fields while a run is in flight. Choice values are resolved by label, never hardcoded.",
+      "content": "var DocumentProcessing = (function () {\n  var STATUS_ATTR = 'dpa_processingstatus';\n  var FILE_ATTR = 'dpa_sourcedocument';\n  var NOTIFY_ID = 'dpa_readytoprocess_requires_document';\n\n  function optionValue(attr, label) {\n    if (!attr || !attr.getOptions) { return null; }\n    var opts = attr.getOptions() || [];\n    for (var i = 0; i < opts.length; i++) {\n      if (opts[i].text === label) { return opts[i].value; }\n    }\n    return null;\n  }\n\n  function hasDocument(formCtx) {\n    var names = [FILE_ATTR, FILE_ATTR + '_name'];\n    var found = false;\n    for (var i = 0; i < names.length; i++) {\n      var a = formCtx.getAttribute(names[i]);\n      if (a) {\n        found = true;\n        var v = a.getValue();\n        if (v !== null && v !== undefined && v !== '') { return true; }\n      }\n    }\n    if (!found) { return true; }\n    return false;\n  }\n\n  function clearNotification(formCtx) {\n    var ctrl = formCtx.getControl(STATUS_ATTR);\n    if (ctrl && ctrl.clearNotification) { ctrl.clearNotification(NOTIFY_ID); }\n  }\n\n  function onSave(executionContext) {\n    var formCtx = executionContext.getFormContext();\n    var statusAttr = formCtx.getAttribute(STATUS_ATTR);\n    if (!statusAttr) { return; }\n    clearNotification(formCtx);\n\n    var readyValue = optionValue(statusAttr, 'Ready to Process');\n    if (readyValue === null) { return; }\n    if (statusAttr.getValue() !== readyValue) { return; }\n    if (hasDocument(formCtx)) { return; }\n\n    var args = executionContext.getEventArgs();\n    if (args && args.preventDefault) { args.preventDefault(); }\n    var ctrl = formCtx.getControl(STATUS_ATTR);\n    if (ctrl && ctrl.setNotification) {\n      ctrl.setNotification('Attach a source document before setting this record to Ready to Process.', NOTIFY_ID);\n    }\n  }\n\n  function onStatusChange(executionContext) {\n    clearNotification(executionContext.getFormContext());\n  }\n\n  return { onSave: onSave, onStatusChange: onStatusChange };\n})();\n"
+    }
+  ],
+  "entities": [
+    {
+      "schemaName": "dpa_Invoice",
+      "displayName": "Invoice",
+      "pluralName": "Invoices",
+      "description": "A vendor invoice captured for AI extraction. Holds the uploaded source document, the chosen extraction method, the processing lifecycle state, the extracted invoice values, and the diagnostics of the last processing attempt.",
+      "vectorIcon": "dpa_invoiceicon.svg",
+      "iconDescription": "an outlined document sheet with text lines and a currency mark through the middle",
+      "primaryAttribute": {
+        "schemaName": "dpa_InvoiceName",
+        "displayName": "Invoice Name",
+        "description": "Human-readable label for the invoice record. Use the source filename, or 'Invoice' plus the creation date, when nothing better is known at capture time."
+      },
+      "columns": [
+        { "schemaName": "dpa_InvoiceNumber", "displayName": "Invoice Number", "type": "Text", "maxLength": 100, "description": "The vendor's invoice number. Optional before processing; populated by extraction." },
+        { "schemaName": "dpa_PurchaseOrderNumber", "displayName": "Purchase Order Number", "type": "Text", "maxLength": 100, "description": "Purchase order the invoice bills against. Populated by extraction when the document carries one." },
+        { "schemaName": "dpa_VendorName", "displayName": "Vendor Name", "type": "Text", "maxLength": 200, "description": "Legal or trading name of the supplier that issued the invoice." },
+        { "schemaName": "dpa_VendorAddress", "displayName": "Vendor Address", "type": "Memo", "description": "Full postal address of the supplier, as printed on the invoice." },
+        { "schemaName": "dpa_VendorTaxNumber", "displayName": "Vendor Tax Number", "type": "Text", "maxLength": 100, "description": "Supplier tax registration identifier (VAT, GST or equivalent)." },
+        { "schemaName": "dpa_BillToName", "displayName": "Bill To Name", "type": "Text", "maxLength": 200, "description": "Name of the party the invoice is billed to." },
+        { "schemaName": "dpa_BillToAddress", "displayName": "Bill To Address", "type": "Memo", "description": "Postal address the invoice is billed to." },
+        { "schemaName": "dpa_InvoiceDate", "displayName": "Invoice Date", "type": "DateTime", "dateFormat": "DateOnly", "description": "Date the vendor issued the invoice." },
+        { "schemaName": "dpa_DueDate", "displayName": "Due Date", "type": "DateTime", "dateFormat": "DateOnly", "description": "Date payment falls due." },
+        { "schemaName": "dpa_Subtotal", "displayName": "Subtotal", "type": "Money", "description": "Net amount before tax." },
+        { "schemaName": "dpa_TaxAmount", "displayName": "Tax Amount", "type": "Money", "description": "Total tax charged on the invoice." },
+        { "schemaName": "dpa_TotalAmount", "displayName": "Total Amount", "type": "Money", "description": "Gross invoice total including tax." },
+        { "schemaName": "dpa_AmountDue", "displayName": "Amount Due", "type": "Money", "description": "Balance still payable, which can differ from the total when a deposit was already paid." },
+        { "schemaName": "dpa_CurrencyCode", "displayName": "Currency Code", "type": "Text", "maxLength": 10, "description": "Currency the invoice is denominated in, as returned by extraction (CAD, USD, EUR)." },
+        { "schemaName": "dpa_SourceDocument", "displayName": "Source Document", "type": "File", "maxSizeKb": 32768, "description": "The uploaded invoice PDF or image. Required before the record can move to Ready to Process; read by the processing flow." },
+        { "schemaName": "dpa_ProcessingStatus", "displayName": "Processing Status", "type": "Choice", "globalChoice": "dpa_documentprocessingstatus", "required": true, "description": "Where this invoice sits in the processing lifecycle. Users set Draft and Ready to Process; the flow owns Processing, Completed and Failed." },
+        { "schemaName": "dpa_ExtractionMethod", "displayName": "Extraction Method", "type": "Choice", "globalChoice": "dpa_extractionmethod", "required": true, "description": "Which AI extraction approach the flow branches to for this record. Chosen by the user, never inferred from the file." },
+        { "schemaName": "dpa_ReprocessRequested", "displayName": "Reprocess Requested", "type": "Boolean", "trueLabel": "Yes", "falseLabel": "No", "defaultValue": false, "description": "Makes an intentional reprocessing request explicit. The flow resets it to No once a new attempt starts." },
+        { "schemaName": "dpa_ProcessingStartedOn", "displayName": "Processing Started On", "type": "DateTime", "dateFormat": "DateAndTime", "description": "When the current or most recent processing attempt began. Set by the flow." },
+        { "schemaName": "dpa_ProcessingCompletedOn", "displayName": "Processing Completed On", "type": "DateTime", "dateFormat": "DateAndTime", "description": "When the most recent processing attempt finished, on success or failure. Set by the flow." },
+        { "schemaName": "dpa_ProcessingAttemptCount", "displayName": "Processing Attempt Count", "type": "Integer", "minValue": 0, "description": "How many times processing has been attempted. Incremented once per attempt; preserved across failures for troubleshooting." },
+        { "schemaName": "dpa_LastProcessingRunId", "displayName": "Last Processing Run ID", "type": "Text", "maxLength": 200, "description": "Correlation identifier of the most recent flow run, used to find the run in Power Automate when diagnosing a failure." },
+        { "schemaName": "dpa_ExtractionConfidence", "displayName": "Extraction Confidence", "type": "Decimal", "precision": 4, "minValue": 0, "maxValue": 1, "description": "Overall confidence reported by the extraction model, 0 to 1. Populated only when a meaningful overall value is available." },
+        { "schemaName": "dpa_RawExtractionResult", "displayName": "Raw Extraction Result", "type": "Memo", "maxLength": 100000, "description": "Compact JSON of the relevant extraction output, kept for troubleshooting. Diagnostic content, not a primary user surface." },
+        { "schemaName": "dpa_ExtractedLineItems", "displayName": "Extracted Line Items", "type": "Memo", "maxLength": 100000, "description": "Invoice line items as structured JSON. The MVP deliberately avoids a normalized line-item table." },
+        { "schemaName": "dpa_ProcessingErrorCode", "displayName": "Processing Error Code", "type": "Text", "maxLength": 100, "description": "Short machine-readable failure code from the last attempt. Cleared when a new attempt starts." },
+        { "schemaName": "dpa_ProcessingErrorMessage", "displayName": "Processing Error Message", "type": "Memo", "maxLength": 4000, "description": "User-readable explanation of why the last attempt failed. Cleared when a new attempt starts." },
+        { "schemaName": "dpa_ProcessedBy", "displayName": "Processed By", "type": "Text", "maxLength": 100, "description": "Which extraction path produced the current values, such as Native AI Builder Invoice Model or AI Builder Invoice Custom Prompt." }
+      ]
+    },
+    {
+      "schemaName": "dpa_Receipt",
+      "displayName": "Receipt",
+      "pluralName": "Receipts",
+      "description": "A purchase receipt captured for AI extraction. Holds the uploaded source document, the chosen extraction method, the processing lifecycle state, the extracted merchant and transaction values, and the diagnostics of the last processing attempt.",
+      "vectorIcon": "dpa_receipticon.svg",
+      "iconDescription": "an outlined till-roll slip with a torn zigzag bottom edge and short text lines",
+      "primaryAttribute": {
+        "schemaName": "dpa_ReceiptName",
+        "displayName": "Receipt Name",
+        "description": "Human-readable label for the receipt record. Use the source filename, or 'Receipt' plus the creation date, when nothing better is known at capture time."
+      },
+      "columns": [
+        { "schemaName": "dpa_ReceiptNumber", "displayName": "Receipt Number", "type": "Text", "maxLength": 100, "description": "Receipt or transaction number printed on the slip." },
+        { "schemaName": "dpa_MerchantName", "displayName": "Merchant Name", "type": "Text", "maxLength": 200, "description": "Trading name of the merchant that issued the receipt." },
+        { "schemaName": "dpa_MerchantAddress", "displayName": "Merchant Address", "type": "Memo", "description": "Street address of the merchant location." },
+        { "schemaName": "dpa_MerchantPhone", "displayName": "Merchant Phone", "type": "Text", "maxLength": 50, "format": "Phone", "description": "Contact telephone number printed on the receipt." },
+        { "schemaName": "dpa_MerchantTaxNumber", "displayName": "Merchant Tax Number", "type": "Text", "maxLength": 100, "description": "Merchant tax registration identifier (VAT, GST or equivalent)." },
+        { "schemaName": "dpa_TransactionDate", "displayName": "Transaction Date", "type": "DateTime", "dateFormat": "DateOnly", "description": "Date the purchase took place." },
+        { "schemaName": "dpa_TransactionTime", "displayName": "Transaction Time", "type": "Text", "maxLength": 20, "description": "Time of purchase as printed. Stored as text in the MVP so an extracted local time is never shifted by timezone conversion." },
+        { "schemaName": "dpa_PaymentMethod", "displayName": "Payment Method", "type": "Text", "maxLength": 100, "description": "How the purchase was paid, such as Visa, Cash or Debit." },
+        { "schemaName": "dpa_Subtotal", "displayName": "Subtotal", "type": "Money", "description": "Net amount before tax." },
+        { "schemaName": "dpa_TaxAmount", "displayName": "Tax Amount", "type": "Money", "description": "Total tax charged on the receipt." },
+        { "schemaName": "dpa_TipAmount", "displayName": "Tip Amount", "type": "Money", "description": "Gratuity added to the transaction." },
+        { "schemaName": "dpa_TotalAmount", "displayName": "Total Amount", "type": "Money", "description": "Gross receipt total including tax and tip." },
+        { "schemaName": "dpa_CurrencyCode", "displayName": "Currency Code", "type": "Text", "maxLength": 10, "description": "Currency the receipt is denominated in, as returned by extraction (CAD, USD, EUR)." },
+        { "schemaName": "dpa_SourceDocument", "displayName": "Source Document", "type": "File", "maxSizeKb": 32768, "description": "The uploaded receipt PDF or image. Required before the record can move to Ready to Process; read by the processing flow." },
+        { "schemaName": "dpa_ProcessingStatus", "displayName": "Processing Status", "type": "Choice", "globalChoice": "dpa_documentprocessingstatus", "required": true, "description": "Where this receipt sits in the processing lifecycle. Users set Draft and Ready to Process; the flow owns Processing, Completed and Failed." },
+        { "schemaName": "dpa_ExtractionMethod", "displayName": "Extraction Method", "type": "Choice", "globalChoice": "dpa_extractionmethod", "required": true, "description": "Which AI extraction approach the flow branches to for this record. Chosen by the user, never inferred from the file." },
+        { "schemaName": "dpa_ReprocessRequested", "displayName": "Reprocess Requested", "type": "Boolean", "trueLabel": "Yes", "falseLabel": "No", "defaultValue": false, "description": "Makes an intentional reprocessing request explicit. The flow resets it to No once a new attempt starts." },
+        { "schemaName": "dpa_ProcessingStartedOn", "displayName": "Processing Started On", "type": "DateTime", "dateFormat": "DateAndTime", "description": "When the current or most recent processing attempt began. Set by the flow." },
+        { "schemaName": "dpa_ProcessingCompletedOn", "displayName": "Processing Completed On", "type": "DateTime", "dateFormat": "DateAndTime", "description": "When the most recent processing attempt finished, on success or failure. Set by the flow." },
+        { "schemaName": "dpa_ProcessingAttemptCount", "displayName": "Processing Attempt Count", "type": "Integer", "minValue": 0, "description": "How many times processing has been attempted. Incremented once per attempt; preserved across failures for troubleshooting." },
+        { "schemaName": "dpa_LastProcessingRunId", "displayName": "Last Processing Run ID", "type": "Text", "maxLength": 200, "description": "Correlation identifier of the most recent flow run, used to find the run in Power Automate when diagnosing a failure." },
+        { "schemaName": "dpa_ExtractionConfidence", "displayName": "Extraction Confidence", "type": "Decimal", "precision": 4, "minValue": 0, "maxValue": 1, "description": "Overall confidence reported by the extraction model, 0 to 1. Populated only when a meaningful overall value is available." },
+        { "schemaName": "dpa_RawExtractionResult", "displayName": "Raw Extraction Result", "type": "Memo", "maxLength": 100000, "description": "Compact JSON of the relevant extraction output, kept for troubleshooting. Diagnostic content, not a primary user surface." },
+        { "schemaName": "dpa_ExtractedLineItems", "displayName": "Extracted Line Items", "type": "Memo", "maxLength": 100000, "description": "Purchased items as structured JSON. The MVP deliberately avoids a normalized line-item table." },
+        { "schemaName": "dpa_ProcessingErrorCode", "displayName": "Processing Error Code", "type": "Text", "maxLength": 100, "description": "Short machine-readable failure code from the last attempt. Cleared when a new attempt starts." },
+        { "schemaName": "dpa_ProcessingErrorMessage", "displayName": "Processing Error Message", "type": "Memo", "maxLength": 4000, "description": "User-readable explanation of why the last attempt failed. Cleared when a new attempt starts." },
+        { "schemaName": "dpa_ProcessedBy", "displayName": "Processed By", "type": "Text", "maxLength": 100, "description": "Which extraction path produced the current values, such as Native AI Builder Receipt Model or AI Builder Receipt Custom Prompt." }
+      ]
+    }
+  ],
+  "views": [
+    {
+      "entity": "dpa_Invoice",
+      "type": "main",
+      "name": "All Invoices",
+      "description": "Every active invoice, newest first — the default landing grid for the Invoices nav entry.",
+      "columns": ["dpa_InvoiceName", "dpa_ProcessingStatus", "dpa_ExtractionMethod", "dpa_VendorName", "dpa_InvoiceDate", "dpa_TotalAmount", "modifiedon"],
+      "sort": [{ "attr": "modifiedon", "dir": "desc" }],
+      "activeOnly": true
+    },
+    {
+      "entity": "dpa_Invoice",
+      "type": "main",
+      "name": "Draft Invoices",
+      "description": "Invoices still being prepared. Automation never touches these — a document must be attached and the record moved to Ready to Process first.",
+      "columns": ["dpa_InvoiceName", "dpa_ExtractionMethod", "dpa_VendorName", "dpa_InvoiceDate", "modifiedon"],
+      "sort": [{ "attr": "modifiedon", "dir": "desc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Draft" }]
+    },
+    {
+      "entity": "dpa_Invoice",
+      "type": "main",
+      "name": "Invoices Ready to Process",
+      "description": "Invoices queued for extraction. A row lingering here means the processing flow did not pick it up.",
+      "columns": ["dpa_InvoiceName", "dpa_ExtractionMethod", "dpa_VendorName", "dpa_ProcessingAttemptCount", "modifiedon"],
+      "sort": [{ "attr": "modifiedon", "dir": "asc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Ready to Process" }]
+    },
+    {
+      "entity": "dpa_Invoice",
+      "type": "main",
+      "name": "Invoices Processing",
+      "description": "Invoices currently being extracted. A row stuck here points at a flow that failed without reaching its error handler.",
+      "columns": ["dpa_InvoiceName", "dpa_ExtractionMethod", "dpa_ProcessingStartedOn", "dpa_ProcessingAttemptCount", "dpa_LastProcessingRunId"],
+      "sort": [{ "attr": "dpa_ProcessingStartedOn", "dir": "asc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Processing" }]
+    },
+    {
+      "entity": "dpa_Invoice",
+      "type": "main",
+      "name": "Completed Invoices",
+      "description": "Invoices whose extraction succeeded, with the values the model returned.",
+      "columns": ["dpa_InvoiceName", "dpa_VendorName", "dpa_InvoiceNumber", "dpa_InvoiceDate", "dpa_TotalAmount", "dpa_ProcessedBy", "dpa_ProcessingCompletedOn"],
+      "sort": [{ "attr": "dpa_ProcessingCompletedOn", "dir": "desc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Completed" }]
+    },
+    {
+      "entity": "dpa_Invoice",
+      "type": "main",
+      "name": "Failed Invoices",
+      "description": "Invoices whose extraction failed, with the error to act on. Fix the file or the method, then set the row back to Ready to Process.",
+      "columns": ["dpa_InvoiceName", "dpa_ExtractionMethod", "dpa_ProcessingErrorCode", "dpa_ProcessingErrorMessage", "dpa_ProcessingAttemptCount", "dpa_ProcessingCompletedOn"],
+      "sort": [{ "attr": "dpa_ProcessingCompletedOn", "dir": "desc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Failed" }]
+    },
+    {
+      "entity": "dpa_Receipt",
+      "type": "main",
+      "name": "All Receipts",
+      "description": "Every active receipt, newest first — the default landing grid for the Receipts nav entry.",
+      "columns": ["dpa_ReceiptName", "dpa_ProcessingStatus", "dpa_ExtractionMethod", "dpa_MerchantName", "dpa_TransactionDate", "dpa_TotalAmount", "modifiedon"],
+      "sort": [{ "attr": "modifiedon", "dir": "desc" }],
+      "activeOnly": true
+    },
+    {
+      "entity": "dpa_Receipt",
+      "type": "main",
+      "name": "Draft Receipts",
+      "description": "Receipts still being prepared. Automation never touches these — a document must be attached and the record moved to Ready to Process first.",
+      "columns": ["dpa_ReceiptName", "dpa_ExtractionMethod", "dpa_MerchantName", "dpa_TransactionDate", "modifiedon"],
+      "sort": [{ "attr": "modifiedon", "dir": "desc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Draft" }]
+    },
+    {
+      "entity": "dpa_Receipt",
+      "type": "main",
+      "name": "Receipts Ready to Process",
+      "description": "Receipts queued for extraction. A row lingering here means the processing flow did not pick it up.",
+      "columns": ["dpa_ReceiptName", "dpa_ExtractionMethod", "dpa_MerchantName", "dpa_ProcessingAttemptCount", "modifiedon"],
+      "sort": [{ "attr": "modifiedon", "dir": "asc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Ready to Process" }]
+    },
+    {
+      "entity": "dpa_Receipt",
+      "type": "main",
+      "name": "Receipts Processing",
+      "description": "Receipts currently being extracted. A row stuck here points at a flow that failed without reaching its error handler.",
+      "columns": ["dpa_ReceiptName", "dpa_ExtractionMethod", "dpa_ProcessingStartedOn", "dpa_ProcessingAttemptCount", "dpa_LastProcessingRunId"],
+      "sort": [{ "attr": "dpa_ProcessingStartedOn", "dir": "asc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Processing" }]
+    },
+    {
+      "entity": "dpa_Receipt",
+      "type": "main",
+      "name": "Completed Receipts",
+      "description": "Receipts whose extraction succeeded, with the values the model returned.",
+      "columns": ["dpa_ReceiptName", "dpa_MerchantName", "dpa_ReceiptNumber", "dpa_TransactionDate", "dpa_TotalAmount", "dpa_ProcessedBy", "dpa_ProcessingCompletedOn"],
+      "sort": [{ "attr": "dpa_ProcessingCompletedOn", "dir": "desc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Completed" }]
+    },
+    {
+      "entity": "dpa_Receipt",
+      "type": "main",
+      "name": "Failed Receipts",
+      "description": "Receipts whose extraction failed, with the error to act on. Fix the file or the method, then set the row back to Ready to Process.",
+      "columns": ["dpa_ReceiptName", "dpa_ExtractionMethod", "dpa_ProcessingErrorCode", "dpa_ProcessingErrorMessage", "dpa_ProcessingAttemptCount", "dpa_ProcessingCompletedOn"],
+      "sort": [{ "attr": "dpa_ProcessingCompletedOn", "dir": "desc" }],
+      "activeOnly": true,
+      "filters": [{ "attr": "dpa_processingstatus", "op": "eq", "value": "Failed" }]
+    }
+  ],
+  "forms": [
+    {
+      "entity": "dpa_Invoice",
+      "type": "main",
+      "name": "Invoice",
+      "description": "The working invoice record: upload and submit at the top, extracted values in the middle, processing diagnostics at the bottom.",
+      "events": [
+        { "event": "onsave", "library": "dpa_documentprocessing.js", "function": "DocumentProcessing.onSave" },
+        { "event": "onchange", "attribute": "dpa_processingstatus", "library": "dpa_documentprocessing.js", "function": "DocumentProcessing.onStatusChange" }
+      ],
+      "tabs": [
+        {
+          "name": "tab_invoice_general",
+          "label": "General",
+          "sections": [
+            {
+              "name": "sec_invoice_document",
+              "label": "Document",
+              "columns": 2,
+              "fields": ["dpa_InvoiceName", "dpa_SourceDocument", "dpa_ProcessingStatus", "dpa_ExtractionMethod", "dpa_ReprocessRequested"]
+            },
+            {
+              "name": "sec_invoice_details",
+              "label": "Invoice Details",
+              "columns": 2,
+              "fields": ["dpa_InvoiceNumber", "dpa_PurchaseOrderNumber", "dpa_InvoiceDate", "dpa_DueDate"]
+            },
+            {
+              "name": "sec_invoice_parties",
+              "label": "Vendor and Customer",
+              "columns": 2,
+              "fields": ["dpa_VendorName", "dpa_VendorTaxNumber", "dpa_VendorAddress", "dpa_BillToName", "dpa_BillToAddress"]
+            },
+            {
+              "name": "sec_invoice_amounts",
+              "label": "Amounts",
+              "columns": 2,
+              "fields": ["dpa_Subtotal", "dpa_TaxAmount", "dpa_TotalAmount", "dpa_AmountDue", "dpa_CurrencyCode"]
+            },
+            {
+              "name": "sec_invoice_processing",
+              "label": "Processing Information",
+              "columns": 2,
+              "fields": [
+                { "name": "dpa_ProcessedBy", "readOnly": true },
+                { "name": "dpa_ProcessingStartedOn", "readOnly": true },
+                { "name": "dpa_ProcessingCompletedOn", "readOnly": true },
+                { "name": "dpa_ProcessingAttemptCount", "readOnly": true },
+                { "name": "dpa_LastProcessingRunId", "readOnly": true },
+                { "name": "dpa_ExtractionConfidence", "readOnly": true }
+              ]
+            },
+            {
+              "name": "sec_invoice_diagnostics",
+              "label": "Diagnostics",
+              "columns": 1,
+              "fields": [
+                { "name": "dpa_ProcessingErrorCode", "readOnly": true },
+                { "name": "dpa_ProcessingErrorMessage", "readOnly": true },
+                { "name": "dpa_RawExtractionResult", "readOnly": true },
+                { "name": "dpa_ExtractedLineItems", "readOnly": true }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entity": "dpa_Receipt",
+      "type": "main",
+      "name": "Receipt",
+      "description": "The working receipt record: upload and submit at the top, extracted values in the middle, processing diagnostics at the bottom.",
+      "events": [
+        { "event": "onsave", "library": "dpa_documentprocessing.js", "function": "DocumentProcessing.onSave" },
+        { "event": "onchange", "attribute": "dpa_processingstatus", "library": "dpa_documentprocessing.js", "function": "DocumentProcessing.onStatusChange" }
+      ],
+      "tabs": [
+        {
+          "name": "tab_receipt_general",
+          "label": "General",
+          "sections": [
+            {
+              "name": "sec_receipt_document",
+              "label": "Document",
+              "columns": 2,
+              "fields": ["dpa_ReceiptName", "dpa_SourceDocument", "dpa_ProcessingStatus", "dpa_ExtractionMethod", "dpa_ReprocessRequested"]
+            },
+            {
+              "name": "sec_receipt_details",
+              "label": "Receipt Details",
+              "columns": 2,
+              "fields": ["dpa_ReceiptNumber", "dpa_TransactionDate", "dpa_TransactionTime", "dpa_PaymentMethod"]
+            },
+            {
+              "name": "sec_receipt_merchant",
+              "label": "Merchant",
+              "columns": 2,
+              "fields": ["dpa_MerchantName", "dpa_MerchantPhone", "dpa_MerchantTaxNumber", "dpa_MerchantAddress"]
+            },
+            {
+              "name": "sec_receipt_amounts",
+              "label": "Amounts",
+              "columns": 2,
+              "fields": ["dpa_Subtotal", "dpa_TaxAmount", "dpa_TipAmount", "dpa_TotalAmount", "dpa_CurrencyCode"]
+            },
+            {
+              "name": "sec_receipt_processing",
+              "label": "Processing Information",
+              "columns": 2,
+              "fields": [
+                { "name": "dpa_ProcessedBy", "readOnly": true },
+                { "name": "dpa_ProcessingStartedOn", "readOnly": true },
+                { "name": "dpa_ProcessingCompletedOn", "readOnly": true },
+                { "name": "dpa_ProcessingAttemptCount", "readOnly": true },
+                { "name": "dpa_LastProcessingRunId", "readOnly": true },
+                { "name": "dpa_ExtractionConfidence", "readOnly": true }
+              ]
+            },
+            {
+              "name": "sec_receipt_diagnostics",
+              "label": "Diagnostics",
+              "columns": 1,
+              "fields": [
+                { "name": "dpa_ProcessingErrorCode", "readOnly": true },
+                { "name": "dpa_ProcessingErrorMessage", "readOnly": true },
+                { "name": "dpa_RawExtractionResult", "readOnly": true },
+                { "name": "dpa_ExtractedLineItems", "readOnly": true }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "appShell": {
+    "areas": [
+      {
+        "label": "Document Processing",
+        "groups": [
+          {
+            "label": "Document Processing",
+            "subAreas": [
+              { "entity": "dpa_Invoice", "title": "Invoices" },
+              { "entity": "dpa_Receipt", "title": "Receipts" }
+            ]
+          },
+          {
+            "label": "Operations",
+            "subAreas": [
+              { "entity": "dpa_Invoice", "title": "Invoice Operations" },
+              { "entity": "dpa_Receipt", "title": "Receipt Operations" }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "personas": [
+    {
+      "persona": "Document Processing User",
+      "appAccess": true,
+      "jobs": [
+        {
+          "name": "Capture a document for extraction",
+          "surfaces": ["Invoices", "Receipts", "Invoice", "Receipt", "Draft Invoices", "Draft Receipts"],
+          "privileges": [
+            { "entity": "dpa_invoice", "access": ["read", "create", "write"], "scope": "user" },
+            { "entity": "dpa_receipt", "access": ["read", "create", "write"], "scope": "user" }
+          ]
+        },
+        {
+          "name": "Submit a document and follow its progress",
+          "surfaces": ["Invoices Ready to Process", "Receipts Ready to Process", "Invoices Processing", "Receipts Processing"],
+          "privileges": [
+            { "entity": "dpa_invoice", "access": ["read", "write"], "scope": "user" },
+            { "entity": "dpa_receipt", "access": ["read", "write"], "scope": "user" }
+          ]
+        },
+        {
+          "name": "Read extraction results and processing errors",
+          "surfaces": ["Completed Invoices", "Completed Receipts", "Failed Invoices", "Failed Receipts"],
+          "privileges": [
+            { "entity": "dpa_invoice", "access": ["read"], "scope": "user" },
+            { "entity": "dpa_receipt", "access": ["read"], "scope": "user" }
+          ]
+        }
+      ]
+    },
+    {
+      "persona": "Document Processing Administrator",
+      "appAccess": true,
+      "jobs": [
+        {
+          "name": "Administer document records across the organization",
+          "surfaces": ["Invoices", "Receipts", "Invoice", "Receipt", "All Invoices", "All Receipts"],
+          "privileges": [
+            { "entity": "dpa_invoice", "access": ["read", "create", "write", "delete", "append", "appendTo", "assign", "share"], "scope": "organization" },
+            { "entity": "dpa_receipt", "access": ["read", "create", "write", "delete", "append", "appendTo", "assign", "share"], "scope": "organization" }
+          ]
+        },
+        {
+          "name": "Review failures and request reprocessing",
+          "surfaces": ["Failed Invoices", "Failed Receipts", "Invoices Processing", "Receipts Processing"],
+          "privileges": [
+            { "entity": "dpa_invoice", "access": ["read", "write"], "scope": "organization" },
+            { "entity": "dpa_receipt", "access": ["read", "write"], "scope": "organization" }
+          ]
+        }
+      ]
+    }
+  ],
+  "sampleData": {
+    "dpa_Invoice": [
+      { "dpa_invoicename": "Draft invoice - awaiting document", "dpa_processingstatus": "Draft", "dpa_extractionmethod": "Native AI Builder Model", "dpa_reprocessrequested": false, "dpa_processingattemptcount": 0 },
+      { "dpa_invoicename": "Native model test invoice", "dpa_processingstatus": "Draft", "dpa_extractionmethod": "Native AI Builder Model", "dpa_reprocessrequested": false, "dpa_processingattemptcount": 0 },
+      { "dpa_invoicename": "Custom prompt test invoice", "dpa_processingstatus": "Draft", "dpa_extractionmethod": "AI Builder Custom Prompt", "dpa_reprocessrequested": false, "dpa_processingattemptcount": 0 }
+    ],
+    "dpa_Receipt": [
+      { "dpa_receiptname": "Draft receipt - awaiting document", "dpa_processingstatus": "Draft", "dpa_extractionmethod": "Native AI Builder Model", "dpa_reprocessrequested": false, "dpa_processingattemptcount": 0 },
+      { "dpa_receiptname": "Native model test receipt", "dpa_processingstatus": "Draft", "dpa_extractionmethod": "Native AI Builder Model", "dpa_reprocessrequested": false, "dpa_processingattemptcount": 0 },
+      { "dpa_receiptname": "Custom prompt test receipt", "dpa_processingstatus": "Draft", "dpa_extractionmethod": "AI Builder Custom Prompt", "dpa_reprocessrequested": false, "dpa_processingattemptcount": 0 }
+    ]
+  }
+}

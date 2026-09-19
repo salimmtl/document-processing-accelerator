@@ -1,0 +1,29 @@
+# Dependencies and build output
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Environment-specific Power Platform config — never commit these
+power.config.json
+connrefs.json
+.power/tmp/
+
+# Tooling state
+.maker-workspace/
+.flowagent/
+.powerapps-cli/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Uploaded documents — keep real invoices and receipts out of source control
+uploads/
+*.pdf
+!sample-documents/*

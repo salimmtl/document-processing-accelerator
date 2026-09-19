@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<optionset Name="dpa_documentprocessingstatus" localizedName="Document Processing Status" description="Shared processing lifecycle for every document type in the accelerator. Automation owns the transitions into Processing, Completed and Failed; users own Draft and Ready to Process." xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <OptionSetType>picklist</OptionSetType>
+  <IsGlobal>1</IsGlobal>
+  <IntroducedVersion>1.0.0.0</IntroducedVersion>
+  <IsCustomizable>1</IsCustomizable>
+  <displaynames>
+    <displayname description="Document Processing Status" languagecode="1033" />
+  </displaynames>
+  <Descriptions>
+    <Description description="Shared processing lifecycle for every document type in the accelerator. Automation owns the transitions into Processing, Completed and Failed; users own Draft and Ready to Process." languagecode="1033" />
+  </Descriptions>
+  <options>
+    <option value="100000000" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Draft" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000001" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Ready to Process" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000002" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Processing" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000003" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Completed" languagecode="1033" />
+      </labels>
+    </option>
+    <option value="100000004" ExternalValue="" IsHidden="0">
+      <labels>
+        <label description="Failed" languagecode="1033" />
+      </labels>
+    </option>
+  </options>
+</optionset>

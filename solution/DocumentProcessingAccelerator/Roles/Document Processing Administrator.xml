@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Role id="{038ef062-dfb3-f111-aaac-7c1e52067fec}" name="Document Processing Administrator" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <IsCustomizable>1</IsCustomizable>
+  <IsAutoAssigned>0</IsAutoAssigned>
+  <Description>Authored by @maker-studio/cds-maker-sdk (persona/security role).</Description>
+  <RolePrivileges>
+    <RolePrivilege name="prvAppenddpa_Invoice" level="Global" />
+    <RolePrivilege name="prvAppenddpa_Receipt" level="Global" />
+    <RolePrivilege name="prvAppendTodpa_Invoice" level="Global" />
+    <RolePrivilege name="prvAppendTodpa_Receipt" level="Global" />
+    <RolePrivilege name="prvAssigndpa_Invoice" level="Global" />
+    <RolePrivilege name="prvAssigndpa_Receipt" level="Global" />
+    <RolePrivilege name="prvCreatedpa_Invoice" level="Global" />
+    <RolePrivilege name="prvCreatedpa_Receipt" level="Global" />
+    <RolePrivilege name="prvCreateSharePointData" level="Global" />
+    <RolePrivilege name="prvDeletedpa_Invoice" level="Global" />
+    <RolePrivilege name="prvDeletedpa_Receipt" level="Global" />
+    <RolePrivilege name="prvReadAppModule" level="Global" />
+    <RolePrivilege name="prvReaddpa_Invoice" level="Global" />
+    <RolePrivilege name="prvReaddpa_Receipt" level="Global" />
+    <RolePrivilege name="prvReadSharePointData" level="Global" />
+    <RolePrivilege name="prvReadSharePointDocument" level="Global" />
+    <RolePrivilege name="prvSharedpa_Invoice" level="Global" />
+    <RolePrivilege name="prvSharedpa_Receipt" level="Global" />
+    <RolePrivilege name="prvWritedpa_Invoice" level="Global" />
+    <RolePrivilege name="prvWritedpa_Receipt" level="Global" />
+    <RolePrivilege name="prvWriteSharePointData" level="Global" />
+  </RolePrivileges>
+</Role>

@@ -1,0 +1,498 @@
+{
+  "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "$connections": {
+      "defaultValue": {},
+      "type": "Object"
+    },
+    "$authentication": {
+      "defaultValue": {},
+      "type": "SecureObject"
+    }
+  },
+  "triggers": {
+    "When_an_invoice_becomes_ready_to_process": {
+      "metadata": {
+        "operationMetadataId": "8f2a1c10-0001-4a10-9b10-000000000001"
+      },
+      "type": "OpenApiConnectionWebhook",
+      "inputs": {
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "SubscribeWebhookTrigger"
+        },
+        "parameters": {
+          "subscriptionRequest/message": 3,
+          "subscriptionRequest/entityname": "dpa_invoice",
+          "subscriptionRequest/scope": 4,
+          "subscriptionRequest/filteringattributes": "dpa_processingstatus",
+          "subscriptionRequest/name": "0f74caa4-e0b3-f111-aaab-7c1e52408682:MTA"
+        }
+      },
+      "conditions": [
+        {
+          "expression": "@equals(triggerOutputs()?['body/dpa_processingstatus'], 100000001)"
+        }
+      ]
+    }
+  },
+  "actions": {
+    "Get_invoice_row": {
+      "runAfter": {},
+      "metadata": {
+        "operationMetadataId": "8f2a1c10-0002-4a10-9b10-000000000002"
+      },
+      "type": "OpenApiConnection",
+      "inputs": {
+        "host": {
+          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+          "connectionName": "shared_commondataserviceforapps",
+          "operationId": "GetItem"
+        },
+        "parameters": {
+          "entityName": "dpa_invoices",
+          "recordId": "@triggerOutputs()?['body/dpa_invoiceid']"
+        }
+      },
+      "description": "Re-read the row so the run acts on the latest committed state, not the trigger snapshot."
+    },
+    "Check_still_ready_to_process": {
+      "actions": {
+        "Try_process_invoice": {
+          "actions": {
+            "Mark_invoice_processing": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "8f2a1c10-0005-4a10-9b10-000000000005"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord"
+                },
+                "parameters": {
+                  "entityName": "dpa_invoices",
+                  "recordId": "@triggerOutputs()?['body/dpa_invoiceid']",
+                  "item/dpa_processingstatus": 100000002,
+                  "item/dpa_lastprocessingrunid": "@{workflow()?['run']?['name']}",
+                  "item/dpa_processingattemptcount": "@add(coalesce(outputs('Get_invoice_row')?['body/dpa_processingattemptcount'], 0), 1)",
+                  "item/dpa_processingerrorcode": "",
+                  "item/dpa_processingerrormessage": "",
+                  "item/dpa_processingstartedon": "@{utcNow()}",
+                  "item/dpa_reprocessrequested": false
+                }
+              },
+              "description": "Claim the row: move to Processing, stamp the run, increment the attempt count, clear the previous error and reset the reprocess request."
+            },
+            "Download_source_document": {
+              "runAfter": {
+                "Mark_invoice_processing": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8f2a1c10-0006-4a10-9b10-000000000006"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "GetEntityFileImageFieldContent"
+                },
+                "parameters": {
+                  "entityName": "dpa_invoices",
+                  "recordId": "@triggerOutputs()?['body/dpa_invoiceid']",
+                  "fileImageFieldName": "dpa_sourcedocument"
+                }
+              },
+              "description": "Fetch the uploaded invoice PDF or image. A missing or unreadable file fails the scope and is handled by the catch path."
+            },
+            "Switch_on_extraction_method": {
+              "runAfter": {
+                "Download_source_document": [
+                  "Succeeded"
+                ]
+              },
+              "cases": {
+                "Native_AI_Builder_Model": {
+                  "case": 100000000,
+                  "actions": {
+                    "Set_processed_by_native": {
+                      "runAfter": {
+                        "Process_invoices": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "8f2a1c10-0009-4a10-9b10-000000000009"
+                      },
+                      "type": "Compose",
+                      "inputs": "Native AI Builder Invoice Model"
+                    },
+                    "Process_invoices": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "f6c0b490-5d95-4909-b462-fdccc73196af",
+                        "flowSystemMetadata": {
+                          "portalOperationId": "aibuilderpredict_invoiceprocessingpretrained",
+                          "portalOperationGroup": "aibuilder",
+                          "portalOperationApiDisplayNameOverride": "AI Builder",
+                          "portalOperationIconOverride": "https://content.powerapps.com/resource/makerx/static/pauto/images/designeroperations/aibuilderIcon2026.8e878397.png",
+                          "portalOperationBrandColorOverride": "#0A76C4",
+                          "portalOperationApiTierOverride": "Standard"
+                        }
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                          "connectionName": "shared_commondataserviceforapps",
+                          "operationId": "aibuilderpredict_invoiceprocessingpretrained"
+                        },
+                        "parameters": {
+                          "item/requestv2/base64Encoded": "@body('Download_source_document')",
+                          "recordId": "5ed4d0fd-e9d4-4026-b09b-71f83ea90c60",
+                          "item/source": "{\"consumptionSource\":\"PowerAutomate\",\"partnerSource\":\"AIBuilder\",\"consumptionSourceVersion\":\"Flow\",\"partnerSourceVersion\":\"f3d5e6ea-b78d-19f2-432d-94db5cdd1fe9\"}"
+                        }
+                      },
+                      "description": "Extract invoice fields with the AI Builder Invoice Processing Model."
+                    }
+                  }
+                },
+                "AI_Builder_Custom_Prompt": {
+                  "case": 100000001,
+                  "actions": {
+                    "Run_a_prompt": {
+                      "runAfter": {},
+                      "metadata": {
+                        "operationMetadataId": "bd9c9de4-ab10-482d-87fc-d296b7a551f6",
+                        "flowSystemMetadata": {
+                          "portalOperationId": "aibuilderpredict_customprompt",
+                          "portalOperationGroup": "aibuilder",
+                          "portalOperationApiDisplayNameOverride": "AI Builder",
+                          "portalOperationIconOverride": "https://content.powerapps.com/resource/makerx/static/pauto/images/designeroperations/aibuilderIcon2026.8e878397.png",
+                          "portalOperationBrandColorOverride": "#0A76C4",
+                          "portalOperationApiTierOverride": "Standard"
+                        }
+                      },
+                      "type": "OpenApiConnection",
+                      "inputs": {
+                        "host": {
+                          "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                          "connectionName": "shared_commondataserviceforapps",
+                          "operationId": "aibuilderpredict_customprompt"
+                        },
+                        "parameters": {
+                          "recordId": "99c09580-7eb1-4e5e-a602-8e26b310c7a1",
+                          "item/requestv2/Invoice/base64Encoded": "@body('Download_source_document')",
+                          "item/source": "{\"consumptionSource\":\"PowerAutomate\",\"partnerSource\":\"AIBuilder\",\"consumptionSourceVersion\":\"Flow\",\"partnerSourceVersion\":\"f3d5e6ea-b78d-19f2-432d-94db5cdd1fe9\"}"
+                        }
+                      },
+                      "description": "Extract the document with the AI Builder custom prompt."
+                    },
+                    "Set_processed_by_prompt": {
+                      "type": "Compose",
+                      "runAfter": {
+                        "Run_a_prompt": [
+                          "Succeeded"
+                        ]
+                      },
+                      "metadata": {
+                        "operationMetadataId": "dd44ee55-0001-4000-9000-000000000101"
+                      },
+                      "inputs": "AI Builder Invoice Custom Prompt"
+                    }
+                  }
+                }
+              },
+              "default": {
+                "actions": {
+                  "Mark_unknown_extraction_method": {
+                    "runAfter": {},
+                    "metadata": {
+                      "operationMetadataId": "bb22cc33-0005-4000-9000-000000000101"
+                    },
+                    "type": "OpenApiConnection",
+                    "inputs": {
+                      "host": {
+                        "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                        "connectionName": "shared_commondataserviceforapps",
+                        "operationId": "UpdateOnlyRecord"
+                      },
+                      "parameters": {
+                        "entityName": "dpa_invoices",
+                        "recordId": "@triggerOutputs()?['body/dpa_invoiceid']",
+                        "item/dpa_processingstatus": 100000004,
+                        "item/dpa_processingcompletedon": "@{utcNow()}",
+                        "item/dpa_processingerrorcode": "UNKNOWN_EXTRACTION_METHOD",
+                        "item/dpa_processingerrormessage": "The record does not carry a supported Extraction Method, so no extraction branch applies."
+                      }
+                    },
+                    "description": "No supported branch applies: fail the row explicitly instead of leaving it in Processing."
+                  },
+                  "Terminate_unknown_extraction_method": {
+                    "runAfter": {
+                      "Mark_unknown_extraction_method": [
+                        "Succeeded",
+                        "Failed"
+                      ]
+                    },
+                    "metadata": {
+                      "operationMetadataId": "bb22cc33-0006-4000-9000-000000000101"
+                    },
+                    "type": "Terminate",
+                    "inputs": {
+                      "runStatus": "Failed",
+                      "runError": {
+                        "code": "UNKNOWN_EXTRACTION_METHOD",
+                        "message": "The record does not carry a supported Extraction Method, so no extraction branch applies."
+                      }
+                    }
+                  }
+                }
+              },
+              "expression": "@outputs('Get_invoice_row')?['body/dpa_extractionmethod']",
+              "metadata": {
+                "operationMetadataId": "8f2a1c10-0007-4a10-9b10-000000000007"
+              },
+              "type": "Switch",
+              "description": "Branch strictly on the record's Extraction Method. The method is never inferred from the document type or file extension."
+            },
+            "Mark_invoice_completed": {
+              "runAfter": {
+                "Parse_invoice_extraction": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8f2a1c10-0012-4a10-9b10-000000000012"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord"
+                },
+                "parameters": {
+                  "entityName": "dpa_invoices",
+                  "recordId": "@triggerOutputs()?['body/dpa_invoiceid']",
+                  "item/dpa_processingstatus": 100000003,
+                  "item/dpa_amountdue": "@outputs('Parse_invoice_extraction')?['amountDue']",
+                  "item/dpa_billtoaddress": "@outputs('Parse_invoice_extraction')?['billToAddress']",
+                  "item/dpa_billtoname": "@outputs('Parse_invoice_extraction')?['billToName']",
+                  "item/dpa_currencycode": "@outputs('Parse_invoice_extraction')?['currencyCode']",
+                  "item/dpa_duedate": "@outputs('Parse_invoice_extraction')?['dueDate']",
+                  "item/dpa_extractedlineitems": "@{if(empty(coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['items'], outputs('Parse_prompt_output')?['lineItems'])), null, substring(string(coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['items'], outputs('Parse_prompt_output')?['lineItems'])), 0, min(length(string(coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['items'], outputs('Parse_prompt_output')?['lineItems']))), 99000)))}",
+                  "item/dpa_invoicedate": "@outputs('Parse_invoice_extraction')?['invoiceDate']",
+                  "item/dpa_invoicenumber": "@outputs('Parse_invoice_extraction')?['invoiceNumber']",
+                  "item/dpa_processedby": "@{if(equals(outputs('Get_invoice_row')?['body/dpa_extractionmethod'], 100000000), 'Native AI Builder Invoice Model', 'AI Builder Invoice Custom Prompt')}",
+                  "item/dpa_processingcompletedon": "@{utcNow()}",
+                  "item/dpa_processingerrorcode": "",
+                  "item/dpa_processingerrormessage": "",
+                  "item/dpa_purchaseordernumber": "@outputs('Parse_invoice_extraction')?['purchaseOrderNumber']",
+                  "item/dpa_rawextractionresult": "@{if(empty(coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields'], body('Run_a_prompt'))), null, substring(string(coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields'], body('Run_a_prompt'))), 0, min(length(string(coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields'], body('Run_a_prompt')))), 99000)))}",
+                  "item/dpa_subtotal": "@outputs('Parse_invoice_extraction')?['subTotal']",
+                  "item/dpa_taxamount": "@outputs('Parse_invoice_extraction')?['taxAmount']",
+                  "item/dpa_totalamount": "@outputs('Parse_invoice_extraction')?['totalAmount']",
+                  "item/dpa_vendoraddress": "@outputs('Parse_invoice_extraction')?['vendorAddress']",
+                  "item/dpa_vendorname": "@outputs('Parse_invoice_extraction')?['vendorName']",
+                  "item/dpa_vendortaxnumber": "@outputs('Parse_invoice_extraction')?['vendorTaxNumber']",
+                  "item/dpa_invoicename": "@{if(empty(trim(concat(coalesce(outputs('Parse_invoice_extraction')?['vendorName'], ''), if(empty(outputs('Parse_invoice_extraction')?['invoiceDate']), '', concat(' · ', formatDateTime(outputs('Parse_invoice_extraction')?['invoiceDate'], 'yyyy-MM-dd'))), if(equals(outputs('Parse_invoice_extraction')?['totalAmount'], null), '', concat(' · ', formatNumber(outputs('Parse_invoice_extraction')?['totalAmount'], 'F2'), if(empty(coalesce(outputs('Parse_invoice_extraction')?['currencyCode'], '')), '', concat(' ', coalesce(outputs('Parse_invoice_extraction')?['currencyCode'], '')))))))), null, trim(concat(coalesce(outputs('Parse_invoice_extraction')?['vendorName'], ''), if(empty(outputs('Parse_invoice_extraction')?['invoiceDate']), '', concat(' · ', formatDateTime(outputs('Parse_invoice_extraction')?['invoiceDate'], 'yyyy-MM-dd'))), if(equals(outputs('Parse_invoice_extraction')?['totalAmount'], null), '', concat(' · ', formatNumber(outputs('Parse_invoice_extraction')?['totalAmount'], 'F2'), if(empty(coalesce(outputs('Parse_invoice_extraction')?['currencyCode'], '')), '', concat(' ', coalesce(outputs('Parse_invoice_extraction')?['currencyCode'], ''))))))))}"
+                }
+              },
+              "description": "Successful completion: stamp Completed, record which path produced the values, store the compact raw result and leave the error columns blank."
+            },
+            "Parse_invoice_extraction": {
+              "runAfter": {
+                "Parse_prompt_output": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "cc33dd44-0001-4000-9000-000000000101"
+              },
+              "type": "Compose",
+              "inputs": {
+                "invoiceNumber": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['invoiceId']?['valueText'], outputs('Parse_prompt_output')?['invoiceNumber'])",
+                "purchaseOrderNumber": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['purchaseOrder']?['valueText'], outputs('Parse_prompt_output')?['purchaseOrderNumber'])",
+                "vendorName": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['vendorName']?['valueText'], outputs('Parse_prompt_output')?['vendorName'])",
+                "vendorAddress": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['vendorAddress']?['valueText'], outputs('Parse_prompt_output')?['vendorAddress'])",
+                "vendorTaxNumber": "@outputs('Parse_prompt_output')?['vendorTaxNumber']",
+                "billToName": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['customerName']?['valueText'], outputs('Parse_prompt_output')?['billToName'])",
+                "billToAddress": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['billingAddress']?['valueText'], outputs('Parse_prompt_output')?['billToAddress'])",
+                "invoiceDate": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['invoiceDate']?['valueDate'], outputs('Parse_prompt_output')?['invoiceDate'])",
+                "dueDate": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['dueDate']?['valueDate'], outputs('Parse_prompt_output')?['dueDate'])",
+                "subTotal": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['subTotal']?['valueNumber'], outputs('Parse_prompt_output')?['subTotal'])",
+                "taxAmount": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['totalTax']?['valueNumber'], outputs('Parse_prompt_output')?['taxAmount'])",
+                "totalAmount": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['invoiceTotal']?['valueNumber'], outputs('Parse_prompt_output')?['totalAmount'])",
+                "amountDue": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['amountDue']?['valueNumber'], outputs('Parse_prompt_output')?['amountDue'])",
+                "currencyCode": "@coalesce(body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['invoiceTotal']?['currencyCode'], body('Process_invoices')?['responsev2']?['predictionOutput']?['result']?['fields']?['subTotal']?['currencyCode'], outputs('Parse_prompt_output')?['currencyCode'])"
+              },
+              "description": "Normalize whichever branch ran into one typed object: coalesce(native model, custom prompt)."
+            },
+            "Parse_prompt_output": {
+              "type": "Compose",
+              "runAfter": {
+                "Switch_on_extraction_method": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "ee55ff66-0001-4000-9000-000000000101"
+              },
+              "inputs": "@if(empty(body('Run_a_prompt')?['responsev2']?['predictionOutput']?['text']), null, json(body('Run_a_prompt')?['responsev2']?['predictionOutput']?['text']))",
+              "description": "Parse the custom prompt JSON once. Null when the native branch ran, which lets every column fall back cleanly."
+            }
+          },
+          "runAfter": {},
+          "metadata": {
+            "operationMetadataId": "8f2a1c10-0004-4a10-9b10-000000000004"
+          },
+          "type": "Scope",
+          "description": "Try: claim the row, read the document, extract, and write the results back."
+        },
+        "Catch_mark_invoice_failed": {
+          "actions": {
+            "Collect_failure_detail": {
+              "runAfter": {},
+              "metadata": {
+                "operationMetadataId": "8f2a1c10-0014-4a10-9b10-000000000014"
+              },
+              "type": "Compose",
+              "inputs": "@result('Try_process_invoice')",
+              "description": "Capture the most useful available error detail from the failed scope."
+            },
+            "Mark_invoice_failed": {
+              "runAfter": {
+                "Compose_error_message": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8f2a1c10-0015-4a10-9b10-000000000015"
+              },
+              "type": "OpenApiConnection",
+              "inputs": {
+                "host": {
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps",
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "UpdateOnlyRecord"
+                },
+                "parameters": {
+                  "entityName": "dpa_invoices",
+                  "recordId": "@triggerOutputs()?['body/dpa_invoiceid']",
+                  "item/dpa_processingstatus": 100000004,
+                  "item/dpa_processingcompletedon": "@{utcNow()}",
+                  "item/dpa_processingerrorcode": "@{coalesce(first(body('Filter_failed_actions'))?['code'], 'PROCESSING_FAILED')}",
+                  "item/dpa_processingerrormessage": "@{substring(outputs('Compose_error_message'), 0, min(length(outputs('Compose_error_message')), 3900))}"
+                }
+              },
+              "description": "Never leave the row in Processing: stamp Failed with a user-readable error, preserving the attempt count and run id."
+            },
+            "Terminate_as_failed": {
+              "runAfter": {
+                "Mark_invoice_failed": [
+                  "Succeeded",
+                  "Failed"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "8f2a1c10-0016-4a10-9b10-000000000016"
+              },
+              "type": "Terminate",
+              "inputs": {
+                "runStatus": "Failed",
+                "runError": {
+                  "code": "INVOICE_PROCESSING_FAILED",
+                  "message": "Invoice processing failed. The record was set to Failed with diagnostics."
+                }
+              }
+            },
+            "Filter_failed_actions": {
+              "runAfter": {
+                "Collect_failure_detail": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "aa11bb22-0001-4000-9000-000000000101"
+              },
+              "type": "Query",
+              "inputs": {
+                "from": "@outputs('Collect_failure_detail')",
+                "where": "@equals(item()?['status'], 'Failed')"
+              },
+              "description": "Pick the action that actually failed, so the record carries the real cause rather than the first step of the scope."
+            },
+            "Compose_error_message": {
+              "runAfter": {
+                "Filter_failed_actions": [
+                  "Succeeded"
+                ]
+              },
+              "metadata": {
+                "operationMetadataId": "aa11bb22-0002-4000-9000-000000000102"
+              },
+              "type": "Compose",
+              "inputs": "@concat('Action \"', coalesce(first(body('Filter_failed_actions'))?['name'], 'unknown'), '\" failed with ', coalesce(first(body('Filter_failed_actions'))?['code'], 'an unspecified error'), '. ', coalesce(first(body('Filter_failed_actions'))?['error']?['message'], 'See the flow run identified by Last Processing Run ID for details.'))",
+              "description": "Build a user-readable explanation naming the failing action and its error."
+            }
+          },
+          "runAfter": {
+            "Try_process_invoice": [
+              "Failed",
+              "TimedOut",
+              "Skipped"
+            ]
+          },
+          "metadata": {
+            "operationMetadataId": "8f2a1c10-0013-4a10-9b10-000000000013"
+          },
+          "type": "Scope",
+          "description": "Catch: the row is always moved out of Processing, with diagnostics written to the record."
+        }
+      },
+      "runAfter": {
+        "Get_invoice_row": [
+          "Succeeded"
+        ]
+      },
+      "else": {
+        "actions": {
+          "Skip_not_ready": {
+            "runAfter": {},
+            "metadata": {
+              "operationMetadataId": "8f2a1c10-0017-4a10-9b10-000000000017"
+            },
+            "type": "Terminate",
+            "inputs": {
+              "runStatus": "Succeeded"
+            },
+            "description": "The row is no longer Ready to Process — another run already claimed it. Exit without processing."
+          }
+        }
+      },
+      "expression": {
+        "and": [
+          {
+            "equals": [
+              "@outputs('Get_invoice_row')?['body/dpa_processingstatus']",
+              100000001
+            ]
+          }
+        ]
+      },
+      "metadata": {
+        "operationMetadataId": "8f2a1c10-0003-4a10-9b10-000000000003"
+      },
+      "type": "If",
+      "description": "Idempotency guard: only the run that still sees Ready to Process proceeds."
+    }
+  }
+}

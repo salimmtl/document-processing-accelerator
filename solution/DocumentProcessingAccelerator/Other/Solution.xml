@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ImportExportXml version="9.2.26091.144" SolutionPackageVersion="9.2" languagecode="1033" generatedBy="CrmLive" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" OrganizationVersion="9.2.26091.144" OrganizationSchemaType="Standard" CRMServerServiceabilityVersion="9.2.26091.00144">
+  <SolutionManifest>
+    <UniqueName>DocumentProcessingAccelerator</UniqueName>
+    <LocalizedNames>
+      <LocalizedName description="Document Processing Accelerator" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="Reusable document-processing accelerator: stores invoices and receipts in Dataverse, drives them through a status lifecycle, and extracts their contents with AI Builder." languagecode="1033" />
+    </Descriptions>
+    <Version>1.0.0.0</Version>
+    <Managed>0</Managed>
+    <Publisher>
+      <UniqueName>DocumentProcessingAcceleratorPublisher</UniqueName>
+      <LocalizedNames>
+        <LocalizedName description="Document Processing Accelerator Publisher" languagecode="1033" />
+      </LocalizedNames>
+      <Descriptions>
+        <Description description="Publisher for the Document Processing Accelerator solution." languagecode="1033" />
+      </Descriptions>
+      <EMailAddress xsi:nil="true"></EMailAddress>
+      <SupportingWebsiteUrl xsi:nil="true"></SupportingWebsiteUrl>
+      <CustomizationPrefix>dpa</CustomizationPrefix>
+      <CustomizationOptionValuePrefix>92137</CustomizationOptionValuePrefix>
+      <Addresses>
+        <Address>
+          <AddressNumber>1</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+        <Address>
+          <AddressNumber>2</AddressNumber>
+          <AddressTypeCode>1</AddressTypeCode>
+          <City xsi:nil="true"></City>
+          <County xsi:nil="true"></County>
+          <Country xsi:nil="true"></Country>
+          <Fax xsi:nil="true"></Fax>
+          <FreightTermsCode xsi:nil="true"></FreightTermsCode>
+          <ImportSequenceNumber xsi:nil="true"></ImportSequenceNumber>
+          <Latitude xsi:nil="true"></Latitude>
+          <Line1 xsi:nil="true"></Line1>
+          <Line2 xsi:nil="true"></Line2>
+          <Line3 xsi:nil="true"></Line3>
+          <Longitude xsi:nil="true"></Longitude>
+          <Name xsi:nil="true"></Name>
+          <PostalCode xsi:nil="true"></PostalCode>
+          <PostOfficeBox xsi:nil="true"></PostOfficeBox>
+          <PrimaryContactName xsi:nil="true"></PrimaryContactName>
+          <ShippingMethodCode>1</ShippingMethodCode>
+          <StateOrProvince xsi:nil="true"></StateOrProvince>
+          <Telephone1 xsi:nil="true"></Telephone1>
+          <Telephone2 xsi:nil="true"></Telephone2>
+          <Telephone3 xsi:nil="true"></Telephone3>
+          <TimeZoneRuleVersionNumber xsi:nil="true"></TimeZoneRuleVersionNumber>
+          <UPSZone xsi:nil="true"></UPSZone>
+          <UTCOffset xsi:nil="true"></UTCOffset>
+          <UTCConversionTimeZoneCode xsi:nil="true"></UTCConversionTimeZoneCode>
+        </Address>
+      </Addresses>
+    </Publisher>
+    <RootComponents>
+      <RootComponent type="1" schemaName="dpa_invoice" behavior="0" />
+      <RootComponent type="1" schemaName="dpa_receipt" behavior="0" />
+      <RootComponent type="20" id="{038ef062-dfb3-f111-aaac-7c1e52067fec}" behavior="0" />
+      <RootComponent type="20" id="{fc9b4b61-dfb3-f111-aaac-7c1e5240ac7b}" behavior="0" />
+      <RootComponent type="29" id="{0f74caa4-e0b3-f111-aaab-7c1e52408682}" behavior="0" />
+      <RootComponent type="29" id="{9049f0b9-e0b3-f111-aaab-7c1e52064fd6}" behavior="0" />
+      <RootComponent type="61" schemaName="dpa_documentprocessing.js" behavior="0" />
+      <RootComponent type="61" schemaName="dpa_documentprocessinghub_icon" behavior="0" />
+      <RootComponent type="61" schemaName="dpa_invoiceicon.svg" behavior="0" />
+      <RootComponent type="61" schemaName="dpa_receipticon.svg" behavior="0" />
+      <RootComponent type="62" schemaName="dpa_documentprocessinghub" behavior="0" />
+      <RootComponent type="80" schemaName="dpa_documentprocessinghub" behavior="0" />
+      <RootComponent type="9" schemaName="dpa_documentprocessingstatus" behavior="0" />
+      <RootComponent type="9" schemaName="dpa_extractionmethod" behavior="0" />
+    </RootComponents>
+    <MissingDependencies>
+      <MissingDependency>
+        <Required type="401" displayName="Invoice Processing Model" solution="msdyn_AISolutionDefaultTemplates (202608.1.4.1)" id="{5ed4d0fd-e9d4-4026-b09b-71f83ea90c60}">
+          <package appName="PowerAI" version="202608.1.4.1">msdyn_AISolutionAnchor (202608.1.4.1)</package>
+        </Required>
+        <Dependent type="29" displayName="Process Invoice Document" id="{0f74caa4-e0b3-f111-aaab-7c1e52408682}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="401" displayName="Extract Invoice Fields (DPA)" solution="Active" id="{99c09580-7eb1-4e5e-a602-8e26b310c7a1}" />
+        <Dependent type="29" displayName="Process Invoice Document" id="{0f74caa4-e0b3-f111-aaab-7c1e52408682}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="401" displayName="Extract Receipt Fields (DPA)" solution="Active" id="{a5dc0246-e2d1-4855-96f1-8e3707e92b9e}" />
+        <Dependent type="29" displayName="Process Receipt Document" id="{9049f0b9-e0b3-f111-aaab-7c1e52064fd6}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="401" displayName="Receipt Scanning Model" solution="msdyn_AISolutionDefaultTemplates (202608.1.4.1)" id="{baa44529-bebe-49e6-837a-80bee63b0d2c}">
+          <package appName="PowerAI" version="202608.1.4.1">msdyn_AISolutionAnchor (202608.1.4.1)</package>
+        </Required>
+        <Dependent type="29" displayName="Process Receipt Document" id="{9049f0b9-e0b3-f111-aaab-7c1e52064fd6}" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="SettingDefinition" displayName="AppChannel" solution="msdyn_AppFrameworkInfraExtensions (1.0.0.20)" id.uniquename="AppChannel">
+          <package appName="PowerAppsAppFramework Package" version="1.0.0.25">PowerAppsAppFramework_Anchor (1.0.0.25)</package>
+        </Required>
+        <Dependent type="AppSetting" displayName="parentappmoduleid.uniquename=dpa_documentprocessinghub,settingdefinitionid.uniquename=AppChannel" id.parentappmoduleid.uniquename="dpa_documentprocessinghub" id.settingdefinitionid.uniquename="AppChannel" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="SettingDefinition" displayName="HeaderAndNavigationRefresh" solution="msdyn_AppFrameworkInfraExtensions (1.0.0.20)" id.uniquename="HeaderAndNavigationRefresh">
+          <package appName="PowerAppsAppFramework Package" version="1.0.0.25">PowerAppsAppFramework_Anchor (1.0.0.25)</package>
+        </Required>
+        <Dependent type="AppSetting" displayName="parentappmoduleid.uniquename=dpa_documentprocessinghub,settingdefinitionid.uniquename=HeaderAndNavigationRefresh" id.parentappmoduleid.uniquename="dpa_documentprocessinghub" id.settingdefinitionid.uniquename="HeaderAndNavigationRefresh" />
+      </MissingDependency>
+      <MissingDependency>
+        <Required type="SettingDefinition" displayName="NewLookAlwaysOn" solution="msdyn_AppFrameworkInfraExtensions (1.0.0.20)" id.uniquename="NewLookAlwaysOn">
+          <package appName="PowerAppsAppFramework Package" version="1.0.0.25">PowerAppsAppFramework_Anchor (1.0.0.25)</package>
+        </Required>
+        <Dependent type="AppSetting" displayName="parentappmoduleid.uniquename=dpa_documentprocessinghub,settingdefinitionid.uniquename=NewLookAlwaysOn" id.parentappmoduleid.uniquename="dpa_documentprocessinghub" id.settingdefinitionid.uniquename="NewLookAlwaysOn" />
+      </MissingDependency>
+    </MissingDependencies>
+  </SolutionManifest>
+</ImportExportXml>

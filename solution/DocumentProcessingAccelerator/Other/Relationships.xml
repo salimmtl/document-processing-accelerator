@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EntityRelationships xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <EntityRelationship Name="business_unit_dpa_invoice" />
+  <EntityRelationship Name="business_unit_dpa_receipt" />
+  <EntityRelationship Name="FileAttachment_dpa_Invoice_dpa_SourceDocument" />
+  <EntityRelationship Name="FileAttachment_dpa_Receipt_dpa_SourceDocument" />
+  <EntityRelationship Name="lk_dpa_invoice_createdby" />
+  <EntityRelationship Name="lk_dpa_invoice_modifiedby" />
+  <EntityRelationship Name="lk_dpa_receipt_createdby" />
+  <EntityRelationship Name="lk_dpa_receipt_modifiedby" />
+  <EntityRelationship Name="owner_dpa_invoice" />
+  <EntityRelationship Name="owner_dpa_receipt" />
+  <EntityRelationship Name="team_dpa_invoice" />
+  <EntityRelationship Name="team_dpa_receipt" />
+  <EntityRelationship Name="TransactionCurrency_dpa_Invoice" />
+  <EntityRelationship Name="TransactionCurrency_dpa_Receipt" />
+  <EntityRelationship Name="user_dpa_invoice" />
+  <EntityRelationship Name="user_dpa_receipt" />
+</EntityRelationships>

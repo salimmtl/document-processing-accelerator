@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppModule>
+  <UniqueName>dpa_documentprocessinghub</UniqueName>
+  <IntroducedVersion>1.0</IntroducedVersion>
+  <WebResourceId>9d72115c-dfb3-f111-aaab-7c1e52064fd6</WebResourceId>
+  <OptimizedFor></OptimizedFor>
+  <statecode>0</statecode>
+  <statuscode>1</statuscode>
+  <FormFactor>1</FormFactor>
+  <ClientType>4</ClientType>
+  <NavigationType>0</NavigationType>
+  <AppModuleComponents>
+    <AppModuleComponent type="1" schemaName="dpa_invoice" />
+    <AppModuleComponent type="1" schemaName="dpa_receipt" />
+    <AppModuleComponent type="26" id="{bd4040e3-a50d-4f62-807c-07734eda1504}" />
+    <AppModuleComponent type="26" id="{608534f7-7ac5-4d15-9bc7-11bced4e2ad8}" />
+    <AppModuleComponent type="26" id="{92c79fcb-c1c7-4306-8b0f-125287a8466b}" />
+    <AppModuleComponent type="26" id="{9171089a-820b-4a8e-b7bc-154a1727b079}" />
+    <AppModuleComponent type="26" id="{204ba538-ef1a-4a5b-a479-2e51f30154be}" />
+    <AppModuleComponent type="26" id="{926e1262-5681-4e1b-8e2b-30faef12f832}" />
+    <AppModuleComponent type="26" id="{b2975630-41b5-4231-b1f7-33cb190ebe31}" />
+    <AppModuleComponent type="26" id="{1f7f7532-8a47-4db6-b85d-7c66a4bf9ca3}" />
+    <AppModuleComponent type="26" id="{d83d3a0b-9895-4e64-9040-7cea51ddd445}" />
+    <AppModuleComponent type="26" id="{83621228-cf33-46e1-a739-96cbed516881}" />
+    <AppModuleComponent type="26" id="{bf3ef3cd-a531-4c4f-9fe8-aa0baaeab8e7}" />
+    <AppModuleComponent type="26" id="{36ea367d-42e9-4d8b-b6ab-d5cbb1b41ee6}" />
+    <AppModuleComponent type="26" id="{41c71c8f-9cd9-42df-b2a8-e54711edc881}" />
+    <AppModuleComponent type="26" id="{186f2b8b-4820-4d5e-8f27-ea3a17054320}" />
+    <AppModuleComponent type="26" id="{9fcbb576-2b0c-4994-bd2f-edb6ef3dbf47}" />
+    <AppModuleComponent type="26" id="{67c4d910-d5e2-420b-b2b6-fcd0a48084e2}" />
+    <AppModuleComponent type="60" id="{c04485a4-f22b-4f61-8601-0f7ce2c9ea40}" />
+    <AppModuleComponent type="60" id="{458d0e14-872f-4811-9a17-a921f0e388b4}" />
+    <AppModuleComponent type="60" id="{ff05bffc-57b2-4253-9fe5-bb914663ea6c}" />
+    <AppModuleComponent type="60" id="{31ebf83f-5603-418b-8264-f4a6b627881d}" />
+    <AppModuleComponent type="62" schemaName="dpa_documentprocessinghub" />
+  </AppModuleComponents>
+  <AppModuleRoleMaps>
+    <Role id="{038ef062-dfb3-f111-aaac-7c1e52067fec}" />
+    <Role id="{fc9b4b61-dfb3-f111-aaac-7c1e5240ac7b}" />
+    <Role id="{627090ff-40a3-4053-8790-584edc5be201}" />
+    <Role id="{119f245c-3cc8-4b62-b31c-d1a046ced15d}" />
+  </AppModuleRoleMaps>
+  <LocalizedNames>
+    <LocalizedName description="Document Processing Hub" languagecode="1033" />
+  </LocalizedNames>
+  <Descriptions>
+    <Description description="Administration and testing surface for the Document Processing Accelerator. Use this app to capture invoice and receipt records, upload a source PDF or image, choose the AI extraction method, submit documents for processing, monitor the processing lifecycle, and read extraction results and processing errors. It deliberately excludes approvals, payments, vendor master matching and accounting posting. Prefer the Document Processing Experience code app when the request is about a tailored end-user browsing experience over the same data." languagecode="1033" />
+  </Descriptions>
+  <appsettings>
+    <appsetting settingdefinitionid.uniquename="AppChannel">
+      <iscustomizable>1</iscustomizable>
+      <value>1</value>
+    </appsetting>
+    <appsetting settingdefinitionid.uniquename="HeaderAndNavigationRefresh">
+      <iscustomizable>1</iscustomizable>
+      <value>2</value>
+    </appsetting>
+    <appsetting settingdefinitionid.uniquename="NewLookAlwaysOn">
+      <iscustomizable>1</iscustomizable>
+      <value>true</value>
+    </appsetting>
+  </appsettings>
+</AppModule>

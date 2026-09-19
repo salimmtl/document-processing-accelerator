@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{186f2b8b-4820-4d5e-8f27-ea3a17054320}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="dpa_receiptname" select="1" icon="1" preview="1">
+        <row name="result" id="dpa_receiptid">
+          <cell name="dpa_receiptname" width="300" />
+          <cell name="dpa_receiptnumber" width="150" />
+          <cell name="dpa_merchantname" width="150" />
+          <cell name="dpa_merchantphone" width="150" />
+          <cell name="dpa_merchanttaxnumber" width="150" />
+          <cell name="dpa_transactiondate" width="150" />
+          <cell name="dpa_transactiontime" width="150" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="dpa_receipt">
+          <attribute name="dpa_receiptid" />
+          <attribute name="dpa_receiptname" />
+          <attribute name="dpa_receiptnumber" />
+          <attribute name="dpa_merchantname" />
+          <attribute name="dpa_merchantphone" />
+          <attribute name="dpa_merchanttaxnumber" />
+          <attribute name="dpa_transactiondate" />
+          <attribute name="dpa_transactiontime" />
+          <order attribute="dpa_receiptname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0.0.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active Receipts" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>

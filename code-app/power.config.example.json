@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "appId": null,
+  "appDisplayName": "Document Processing Experience",
+  "region": "prod",
+  "environmentId": "<your-environment-id>",
+  "description": "Tailored experience over the Document Processing Accelerator Dataverse tables.",
+  "buildPath": "dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {},
+  "databaseReferences": {
+    "default.cds": {
+      "dataSources": {
+        "invoices": {
+          "entitySetName": "dpa_invoices",
+          "logicalName": "dpa_invoice"
+        },
+        "receipts": {
+          "entitySetName": "dpa_receipts",
+          "logicalName": "dpa_receipt"
+        }
+      },
+      "environmentVariableName": ""
+    }
+  }
+}

@@ -1,0 +1,333 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <systemform>
+    <formid>{c04485a4-f22b-4f61-8601-0f7ce2c9ea40}</formid>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <FormPresentation>0</FormPresentation>
+    <FormActivationState>1</FormActivationState>
+    <form>
+      <tabs>
+        <tab id="e7999de2-8f3d-4e0e-b60b-fc7b65306fd5" name="tab_receipt_general" expanded="true" visible="true">
+          <labels>
+            <label description="General" languagecode="1033" />
+          </labels>
+          <columns>
+            <column width="100%">
+              <sections>
+                <section id="fdd4562b-0ac2-4b9f-b37b-0f908f6a0e3a" name="sec_receipt_document" showlabel="true" visible="true" columns="11">
+                  <labels>
+                    <label description="Document" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="94ada5c2-6635-4c2e-add2-3b53ca100cb2" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Receipt Name" languagecode="1033" />
+                        </labels>
+                        <control id="06242001-9e07-480a-82dd-b9edde069b4c" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_receiptname" disabled="false" isrequired="true" />
+                      </cell>
+                      <cell id="d09aec46-ccf8-48a6-8c3d-3fef1f2c94ac" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Source Document" languagecode="1033" />
+                        </labels>
+                        <control id="a308ab51-198a-44ed-9cf8-7560ab22844e" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_sourcedocument" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="8dc50f0c-0a90-453e-90b9-1f4379c1f2cf" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Processing Status" languagecode="1033" />
+                        </labels>
+                        <control id="01422bd0-d8ec-4801-9d4f-e40337fdb7f8" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="dpa_processingstatus" disabled="false" isrequired="true" />
+                      </cell>
+                      <cell id="01c4a3a1-7250-46b8-a305-fc88da307378" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Extraction Method" languagecode="1033" />
+                        </labels>
+                        <control id="8d6ef3b0-8ca3-49ff-aa11-bcee14c88d83" classid="{3EF39988-22BB-4F0B-BBBE-64B5A3748AEE}" datafieldname="dpa_extractionmethod" disabled="false" isrequired="true" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="27ed3a56-8f5e-4380-8e8f-2ed056eb1e6e" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Reprocess Requested" languagecode="1033" />
+                        </labels>
+                        <control id="b521c086-84b4-438a-be61-c4fcd4cde991" classid="{67FAC785-CD58-4F9F-ABB3-4B7DDC6ED5ED}" datafieldname="dpa_reprocessrequested" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section id="10dd09ae-5775-45d3-b621-e2867cc6bcc2" name="sec_receipt_details" showlabel="true" visible="true" columns="11">
+                  <labels>
+                    <label description="Receipt Details" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="19cf25c2-2a6a-4a46-8890-7c185c0415ce" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Receipt Number" languagecode="1033" />
+                        </labels>
+                        <control id="07049b96-2912-4525-a87f-830204edc000" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_receiptnumber" disabled="false" isrequired="false" />
+                      </cell>
+                      <cell id="950bd650-8248-42a1-9f48-0a7a14846986" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Transaction Date" languagecode="1033" />
+                        </labels>
+                        <control id="31bc260f-92a9-4eaf-9f66-83a60dcc4850" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="dpa_transactiondate" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="6a98b829-01f4-487d-9eff-3aff9f446f6d" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Transaction Time" languagecode="1033" />
+                        </labels>
+                        <control id="a3bb1eb5-8eeb-4e52-b6eb-fe8b23ad3aca" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_transactiontime" disabled="false" isrequired="false" />
+                      </cell>
+                      <cell id="dc4fc5b2-15ca-47b5-8f44-0ae09f352169" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Payment Method" languagecode="1033" />
+                        </labels>
+                        <control id="74578952-c390-49d7-b0c0-d8a227bd2f5c" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_paymentmethod" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section id="55a13e55-a2c7-4ec9-be13-e7e19907faf7" name="sec_receipt_merchant" showlabel="true" visible="true" columns="11">
+                  <labels>
+                    <label description="Merchant" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="18eabc1a-3921-485b-bb57-15806e06e30e" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Merchant Name" languagecode="1033" />
+                        </labels>
+                        <control id="81cd08a3-a29a-4116-8815-e1078ed46a45" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_merchantname" disabled="false" isrequired="false" />
+                      </cell>
+                      <cell id="c48f0464-f8ba-4851-a4c9-1558e1aa72a8" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Merchant Phone" languagecode="1033" />
+                        </labels>
+                        <control id="ee295db8-cdbb-498f-977c-db1822285395" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_merchantphone" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="59c729e3-05fd-4ddd-b21d-8f6667dfce43" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Merchant Tax Number" languagecode="1033" />
+                        </labels>
+                        <control id="70e398e4-a63f-4c48-b879-f58f9c08cf52" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_merchanttaxnumber" disabled="false" isrequired="false" />
+                      </cell>
+                      <cell id="37b5441f-6296-4f29-a0bc-628781c0a5b3" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Merchant Address" languagecode="1033" />
+                        </labels>
+                        <control id="e938d3f6-91f5-4eb4-bc18-87ebf305639e" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="dpa_merchantaddress" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section id="ff0ad01c-dbb1-4218-9791-b334f170c289" name="sec_receipt_amounts" showlabel="true" visible="true" columns="11">
+                  <labels>
+                    <label description="Amounts" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="2f4fe134-95c9-4484-baaa-6ff85371284d" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Subtotal" languagecode="1033" />
+                        </labels>
+                        <control id="4a3e662e-22db-4527-b0ce-c043f688ebab" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="dpa_subtotal" disabled="false" isrequired="false" />
+                      </cell>
+                      <cell id="a2e2864e-53b1-4540-a5a7-882910c0f843" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Tax Amount" languagecode="1033" />
+                        </labels>
+                        <control id="e10a32da-2913-47f1-a870-32f63613a1df" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="dpa_taxamount" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="6e91d275-62c5-4ce8-9df0-17ce892624a6" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Tip Amount" languagecode="1033" />
+                        </labels>
+                        <control id="92db2efe-1ab4-4bb8-a725-293756c7a051" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="dpa_tipamount" disabled="false" isrequired="false" />
+                      </cell>
+                      <cell id="59e76c91-1a12-4794-b507-773343696f31" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Total Amount" languagecode="1033" />
+                        </labels>
+                        <control id="0e79b46b-15b9-43c2-81fd-c120bccca4de" classid="{533B9E00-756B-4312-95A0-DC888637AC78}" datafieldname="dpa_totalamount" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="1df7df7a-381f-4139-a350-744a026987fd" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Currency Code" languagecode="1033" />
+                        </labels>
+                        <control id="9b7aa34b-aec8-4ab1-af5d-8e60f35010cb" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_currencycode" disabled="false" isrequired="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section id="32596b17-a2f4-488d-be7f-1efe44116e7a" name="sec_receipt_processing" showlabel="true" visible="true" columns="11">
+                  <labels>
+                    <label description="Processing Information" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="52d6a2e5-8ce8-4bd7-9759-3a4f1efa67e1" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Processed By" languagecode="1033" />
+                        </labels>
+                        <control id="294a2612-6d37-42b4-bc69-7830007e7087" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_processedby" disabled="true" isrequired="false" />
+                      </cell>
+                      <cell id="d3e3e688-2b5a-4b5d-b7fa-5dc418ef5b4e" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Processing Started On" languagecode="1033" />
+                        </labels>
+                        <control id="2aa1dcdf-d796-406c-ac43-9a4d00001c01" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="dpa_processingstartedon" disabled="true" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="6e886a0f-10ec-4eb1-a570-5fee40365545" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Processing Completed On" languagecode="1033" />
+                        </labels>
+                        <control id="4cc41c35-bf06-4701-87d9-ed2b71fd60cd" classid="{5B773807-9FB2-42DB-97C3-7A91EFF8ADFF}" datafieldname="dpa_processingcompletedon" disabled="true" isrequired="false" />
+                      </cell>
+                      <cell id="dcde5d6b-97bb-4a50-926f-72bb6d2b7d89" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Processing Attempt Count" languagecode="1033" />
+                        </labels>
+                        <control id="f40e1dcd-63ba-459d-b216-11d94f0c1de6" classid="{C6D124CA-7EDA-4A60-AEA9-7FB8D318B68F}" datafieldname="dpa_processingattemptcount" disabled="true" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="ac03ad85-5302-4ac9-9d18-38522c3735f6" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Last Processing Run ID" languagecode="1033" />
+                        </labels>
+                        <control id="50c48f7a-b906-4f58-9185-6a9547723d5e" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_lastprocessingrunid" disabled="true" isrequired="false" />
+                      </cell>
+                      <cell id="32621adf-82a3-4609-b894-0e530aaf7de6" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Extraction Confidence" languagecode="1033" />
+                        </labels>
+                        <control id="cf6982d8-a18d-4549-a1fa-aa832ac5b617" classid="{C3EFE0C3-0EC6-42BE-8349-CBD9079DFD8E}" datafieldname="dpa_extractionconfidence" disabled="true" isrequired="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+                <section id="d63fdb1c-eae2-466a-80d4-79f9095303a6" name="sec_receipt_diagnostics" showlabel="true" visible="true" columns="1">
+                  <labels>
+                    <label description="Diagnostics" languagecode="1033" />
+                  </labels>
+                  <rows>
+                    <row>
+                      <cell id="d85bb28a-2a2c-43fe-ae2f-f1c5d8134355" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Processing Error Code" languagecode="1033" />
+                        </labels>
+                        <control id="af2c56eb-c36c-417f-9abd-6ecdaf573bb3" classid="{4273EDBD-AC1D-40D3-9FB2-095C621B552D}" datafieldname="dpa_processingerrorcode" disabled="true" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="5a2ad9d5-23a3-4fc2-b607-e0351c85d28e" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Processing Error Message" languagecode="1033" />
+                        </labels>
+                        <control id="56e2fc0e-63cc-4330-957f-bc1434b4f71f" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="dpa_processingerrormessage" disabled="true" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="00306db6-b515-4e10-84ac-2ff0cc17a4c0" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Raw Extraction Result" languagecode="1033" />
+                        </labels>
+                        <control id="e02cbc28-7d0f-4d53-a180-7de0c61e3e7f" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="dpa_rawextractionresult" disabled="true" isrequired="false" />
+                      </cell>
+                    </row>
+                    <row>
+                      <cell id="076e3419-2560-4304-b760-f51996336472" showlabel="true" visible="true" colspan="1" rowspan="1">
+                        <labels>
+                          <label description="Extracted Line Items" languagecode="1033" />
+                        </labels>
+                        <control id="b0deadc3-969d-4c33-a000-7c7b3973c9e5" classid="{E0DECE4B-6FC8-4A8F-A065-082708572369}" datafieldname="dpa_extractedlineitems" disabled="true" isrequired="false" />
+                      </cell>
+                    </row>
+                  </rows>
+                </section>
+              </sections>
+            </column>
+          </columns>
+        </tab>
+      </tabs>
+      <header id="{a2dae791-742a-4f5c-98c7-a05391edcda3}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{d49e8845-1585-4cd0-9d57-d96c2afb251b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{f9efe2b3-077c-4b40-acf5-ccde7fd8bf76}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{0f7a5fa0-1333-4453-9e5e-6596c04c01c0}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </header>
+      <footer id="{6d4b5d98-e2b4-44ed-bf3d-2897b52a59dc}" celllabelposition="Top" columns="111" labelwidth="115" celllabelalignment="Left">
+        <rows>
+          <row>
+            <cell id="{9ecfbe4b-1110-4707-ae89-892c8296a88b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{081a8c77-64db-4a59-8341-b24ebee9015b}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+            <cell id="{edc8dcd9-d06f-4b1b-a8a8-6bb849e03f95}" showlabel="false">
+              <labels>
+                <label description="" languagecode="1033" />
+              </labels>
+            </cell>
+          </row>
+        </rows>
+      </footer>
+      <DisplayConditions Order="0" FallbackForm="true">
+        <Everyone />
+      </DisplayConditions>
+      <events>
+        <event name="onsave" application="false" active="false">
+          <Handlers>
+            <Handler functionName="DocumentProcessing.onSave" libraryName="dpa_documentprocessing.js" enabled="true" parameters="" passExecutionContext="true" handlerUniqueId="{be4a3585-7544-46b5-9bf8-efdc5053c0fc}" />
+          </Handlers>
+        </event>
+        <event name="onchange" application="false" active="false" attribute="dpa_processingstatus">
+          <Handlers>
+            <Handler functionName="DocumentProcessing.onStatusChange" libraryName="dpa_documentprocessing.js" enabled="true" parameters="" passExecutionContext="true" handlerUniqueId="{16278a63-3d1f-4454-a3f8-2ffa20e4e222}" />
+          </Handlers>
+        </event>
+      </events>
+    </form>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>1</CanBeDeleted>
+    <LocalizedNames>
+      <LocalizedName description="Receipt" languagecode="1033" />
+    </LocalizedNames>
+    <Descriptions>
+      <Description description="The working receipt record: upload and submit at the top, extracted values in the middle, processing diagnostics at the bottom." languagecode="1033" />
+    </Descriptions>
+  </systemform>
+</forms>
