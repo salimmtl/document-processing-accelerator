@@ -1,7 +1,7 @@
 # Document Processing Accelerator
 
 > [!CAUTION]
-> **Disclaimer — use at your own risk.**
+> **Disclaimer**
 >
 > This accelerator is provided **"as is"**, without warranty of any kind. It is a personal sample,
 > **not an official Microsoft product**, and is not supported by Microsoft Support.
