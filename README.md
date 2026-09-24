@@ -1,5 +1,21 @@
 # Document Processing Accelerator
 
+> [!CAUTION]
+> **Disclaimer — use at your own risk.**
+>
+> This accelerator is provided **"as is"**, without warranty of any kind. It is a personal sample,
+> **not an official Microsoft product**, and is not supported by Microsoft Support.
+>
+> **Neither Microsoft nor the author is responsible** for how this tool is used or for any impact it
+> has on your environment, including but not limited to:
+>
+> - **Data** — records created, modified or overwritten by the solution and its flows
+> - **AI credit consumption** — every extraction run consumes AI Builder / Copilot credits
+> - **Database capacity** — Dataverse storage used by records, attached files and run history
+>
+> Review and test it in a non-production environment before any wider use. There is **no guarantee
+> of updates, bug fixes or ongoing maintenance.**
+
 A reusable document-processing accelerator for Microsoft Power Platform. Upload an invoice or a
 receipt, and AI Builder extracts its contents into Microsoft Dataverse through a status-driven
 processing pipeline.
@@ -143,4 +159,4 @@ purchase-order matching, payments, and email ingestion. The data model leaves ro
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE). Provided as is — see the [disclaimer](#document-processing-accelerator) at the top of this page.
